@@ -15,10 +15,14 @@ def load_tasks():
         return {}
     
     # Open the file in 'r' (read) mode.
-    with open(FILE_NAME, 'r') as file:
-        # json.load() takes the text in the file and turns it into a Python dictionary!
-        tasks = json.load(file)
-        return tasks
+    try:
+        with open(FILE_NAME, 'r') as file:
+            # json.load() takes the text in the file and turns it into a Python dictionary!
+            tasks = json.load(file)
+            return tasks
+    except json.JSONDecodeError:
+        print("Warning: tasks.json is corrupted or empty. Starting fresh.")
+        return {}
 
 def save_tasks(tasks_dict):
     """
@@ -35,7 +39,8 @@ def display_menu():
     print("1. View Tasks")
     print("2. Add a Task")
     print("3. Delete a Task")
-    print("4. Exit")
+    print("4. Update a Task")
+    print("5. Exit")
 
 def main():
     # 1. When the program starts, load any existing tasks from the file.
@@ -88,11 +93,22 @@ def main():
                 print("Error: Task ID not found.")
 
         elif choice == '4':
+            update_id = input("\nEnter the ID of the task to update: ")
+            if update_id in tasks:
+                print(f"Current task: '{tasks[update_id]}'")
+                new_desc = input("Enter the new task description: ")
+                tasks[update_id] = new_desc
+                print(f"Updated task [{update_id}] to: '{new_desc}'")
+                save_tasks(tasks)
+            else:
+                print("Error: Task ID not found.")
+
+        elif choice == '5':
             print("\nSaving tasks and exiting. Goodbye!")
             break # This breaks us out of the 'while True' loop, ending the program.
 
         else:
-            print("\nInvalid choice. Please enter a number between 1 and 4.")
+            print("\nInvalid choice. Please enter a number between 1 and 5.")
 
 # This is a standard Python practice. It means "if this script is run directly, start the main() function"
 if __name__ == "__main__":
